@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASHURA PAID SERVER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #1e1e1e; color: #00FF00; font-family: 'Roboto Mono', monospace; text-align: center; padding: 20px; font-size: 14px; overflow: hidden; }
+        h1 { font-size: 2em; color: #FF4500; margin-bottom: 20px; text-shadow: 2px 2px 10px rgba(255, 69, 0, 0.7); }
+        #predictedNumber { font-size: 2.5em; color: #FF6347; margin-top: 20px; text-shadow: 2px 2px 8px rgba(255, 99, 71, 0.7); }
+        #timeRemaining, #issueNumber { font-size: 1.5em; margin-top: 10px; color: #FF0000; }
+        #loading { display: none; font-size: 1.2em; color: #FF4500; }
+        #refreshButton, #themeButton { margin-top: 20px; padding: 12px 24px; font-size: 1.2em; cursor: pointer; background-color: #FF4500; color: white; border: none; border-radius: 10px; }
+        #refreshButton:hover { background-color: #FF6347; }
+        #themeButton:hover { background-color: #333; }
+        #history { margin-top: 40px; width: 80%; max-height: 300px; overflow-y: auto; margin-left: auto; margin-right: auto; padding: 15px; background-color: #2d2d2d; border-radius: 10px; box-shadow: 0 0 10px rgba(255, 99, 71, 0.5); }
+        #history h3 { color: #FF6347; margin-bottom: 10px; }
+        #history p { margin: 5px 0; color: #FFDD57; }
+        #history::-webkit-scrollbar { width: 12px; }
+        #history::-webkit-scrollbar-thumb { background-color: #FF6347; border-radius: 6px; }
+        #history::-webkit-scrollbar-track { background-color: #333; }
+    </style>
+</head>
+<body>
+
+    <h1>ASHURA PAID SERVER</h1>
+    <p id="issueNumber">Period: N/A</p>
+    <p id="timeRemaining">Time Remaining: 00:00</p>
+    <p id="predictedNumber">Small</p>
+    <div id="loading">Loading...</div>
+    <button id="refreshButton">Refresh</button>
+    <button id="themeButton">Switch Theme</button>
+    
+    <div id="history">
+        <h3>Prediction History:</h3>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const predictedNumberElement = document.getElementById('predictedNumber');
+            const timerElement = document.getElementById('timeRemaining');
+            const issueNumberElement = document.getElementById('issueNumber');
+            const refreshButton = document.getElementById('refreshButton');
+            const loadingElement = document.getElementById('loading');
+            const themeButton = document.getElementById('themeButton');
+            const historyElement = document.getElementById('history');
+            let currentIssueNumber = null;
+            let timerInterval = null;
+            let isDarkTheme = true;
+
+            const fetchGameIssue = () => fetch('https://api.bdg88zf.com/api/webapi/GetGameIssue', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json;charset=UTF-8', 'Accept': 'application/json, text/plain, */*' },
+                body: JSON.stringify({ typeId: 1, language: 0, random: "e7fe6c090da2495ab8290dac551ef1ed", signature: "1F390E2B2D8A55D693E57FD905AE73A7", timestamp: 1723726679 })
+            }).then(response => response.json()).catch(error => console.error('Error fetching game issue:', error));
+
+            const predictNextNumber = () => Math.random() < 0.5 ? 'Small' : 'Big';
+
+            const updatePrediction = (newIssueNumber) => {
+                if (currentIssueNumber !== newIssueNumber) {
+                    currentIssueNumber = newIssueNumber;
+                    issueNumberElement.textContent = `Period: ${currentIssueNumber}`;
+                    loadingElement.style.display = 'block';
+                    setTimeout(() => {
+                        const prediction = predictNextNumber();
+                        predictedNumberElement.textContent = prediction;
+                        historyElement.innerHTML += `<p>Period: ${currentIssueNumber} - Prediction: ${prediction}</p>`;
+                        loadingElement.style.display = 'none';
+                        localStorage.setItem('lastPrediction', JSON.stringify({ issueNumber: currentIssueNumber, category: prediction }));
+                    }, 2000);
+                }
+            };
+
+            const updateTimer = () => {
+                fetchGameIssue().then(data => {
+                    if (!data.data) return;
+                    const { endTime, issueNumber } = data.data;
+                    const remainingTimeMs = new Date(endTime) - new Date();
+                    timerElement.textContent = remainingTimeMs <= 0 ? "00:00" : `${String(Math.floor(remainingTimeMs / 60000)).padStart(2, '0')}:${String(Math.floor((remainingTimeMs % 60000) / 1000)).padStart(2, '0')}`;
+                    if (currentIssueNumber !== issueNumber) updatePrediction(issueNumber);
+                }).catch(error => console.error('Error fetching game issue:', error));
+            };
+
+            fetchGameIssue().then(data => {
+                if (data.data) {
+                    const initialIssueNumber = data.data.issueNumber;
+                    const lastPrediction = JSON.parse(localStorage.getItem('lastPrediction') || '{}');
+                    if (lastPrediction.issueNumber === initialIssueNumber) predictedNumberElement.textContent = lastPrediction.category;
+                    else updatePrediction(initialIssueNumber);
+                }
+            });
+
+            timerInterval = setInterval(updateTimer, 1000);
+
+            refreshButton.addEventListener('click', () => {
+                fetchGameIssue().then(data => data.data && updatePrediction(data.data.issueNumber));
+            });
+
+            themeButton.addEventListener('click', () => {
+                document.body.style.backgroundColor = isDarkTheme ? '#F5F5F5' : '#1e1e1e';
+                document.body.style.color = isDarkTheme ? '#333' : '#00FF00';
+                isDarkTheme = !isDarkTheme;
+            });
+        });
+    </script>
+</body>
+</html>
