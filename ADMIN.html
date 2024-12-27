@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - ASHURA PRO</title>
+    <style>
+        /* Similar styling as the user-facing page, plus some admin-specific styles */
+        body {
+            font-family: Arial, sans-serif;
+            background: black;
+            color: red;
+        }
+        input, button {
+            padding: 0.5em;
+            margin: 0.5em;
+            font-size: 1em;
+            background: black;
+            color: red;
+            border: 1px solid red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+    <label for="uid">Enter User UID:</label>
+    <input type="text" id="uid" placeholder="User UID">
+    <label for="coins">Enter Coins to Add:</label>
+    <input type="number" id="coins" placeholder="Coins to Add">
+    <button onclick="addCoins()">Add Coins</button>
+
+    <div id="status"></div>
+
+    <script>
+        function addCoins() {
+            const uid = document.getElementById('uid').value;
+            const coinsToAdd = parseInt(document.getElementById('coins').value);
+            const status = document.getElementById('status');
+
+            if (!uid || isNaN(coinsToAdd) || coinsToAdd <= 0) {
+                status.innerHTML = "Please provide a valid UID and coin amount.";
+                return;
+            }
+
+            // Fetch user data from localStorage
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            let user = users.find(u => u.uid === uid);
+
+            if (user) {
+                user.coins += coinsToAdd;
+                localStorage.setItem('users', JSON.stringify(users));
+                status.innerHTML = `Successfully added ${coinsToAdd} coins to UID: ${uid}`;
+            } else {
+                status.innerHTML = "User not found.";
+            }
+        }
+    </script>
+</body>
+  </html>
