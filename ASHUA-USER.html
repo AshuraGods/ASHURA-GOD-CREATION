@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASHURA PRO</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap');
+        body { margin: 0; height: 100vh; font-family: 'Roboto Mono', monospace; overflow: hidden; display: flex; justify-content: center; align-items: center; background: black; }
+        .particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .container { text-align: center; position: relative; z-index: 1; animation: floatUp 2s infinite alternate; }
+        @keyframes floatUp { 0% { transform: translateY(0); } 100% { transform: translateY(-10px); } }
+        h1 { color: red; font-size: 2.5em; text-shadow: 2px 2px 4px #ff0000; }
+        input[type="text"] { padding: 1em; width: 80%; border: 1px solid red; border-radius: 10px; background: black; color: red; font-size: 1.2em; margin-bottom: 1.5em; text-shadow: 1px 1px 2px #ff0000; }
+        button { padding: 0.7em 1.5em; border: none; border-radius: 10px; background: red; color: black; font-size: 1.2em; cursor: pointer; box-shadow: 0 0 10px 2px #ff0000; transition: background 0.3s, transform 0.3s; }
+        button:hover { background: #ff4d4d; transform: scale(1.05); }
+        .social-buttons { margin-top: 2em; }
+        .social-button { background: none; border: 1px solid red; color: red; padding: 0.5em 1.5em; font-size: 1.2em; cursor: pointer; text-transform: uppercase; margin: 0.5em; transition: background 0.3s, transform 0.3s; }
+        .social-button:hover { background: red; color: black; transform: scale(1.05); }
+        .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); justify-content: center; align-items: center; animation: fadeIn 0.5s; }
+        .modal-content { background-color: black; padding: 20px; border-radius: 10px; width: 80%; max-width: 350px; box-shadow: 0 4px 8px rgba(255, 0, 0, 0.2); border: 2px solid red; }
+        .close { color: red; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover { color: #ff4d4d; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .wallet-info { color: red; margin-top: 1em; font-size: 1.2em; text-shadow: 1px 1px 2px #ff0000; }
+    </style>
+</head>
+<body>
+    <div class="particles"></div>
+    <div class="container">
+        <h1>ASHURA PRO</h1>
+        <div class="wallet-info" id="walletInfo">Coins: 0</div>
+        <input type="text" id="periodNumber" placeholder="Enter 5-digit period number" maxlength="5">
+        <button onclick="predict()">Predict</button>
+        <div id="loading" style="display: none; color: red; margin-top: 1em;">Getting...</div>
+        <div class="social-buttons">
+            <button class="social-button" onclick="window.location.href='https://t.me/GodXAshuraOfficial'">Telegram</button>
+            <button class="social-button" onclick="window.location.href='https://youtube.com/@arisecheats?si=Tm6eTLQJ-wGmpqB3'">YouTube</button>
+        </div>
+    </div>
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Congratulations</h2>
+            <div id="gameResult"></div>
+            <div id="gameDetails"></div>
+            <button onclick="copyToClipboard()">Copy</button>
+        </div>
+    </div>
+
+    <script>
+        const particlesDiv = document.querySelector('.particles');
+        for (let i = 0; i < 100; i++) {
+            const particle = document.createElement('div');
+            particle.style.position = 'absolute';
+            particle.style.width = Math.random() * 5 + 'px';
+            particle.style.height = Math.random() * 5 + 'px';
+            particle.style.background = `rgba(255, 0, 0, ${Math.random()})`;
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animation = `particleAnimation ${Math.random() * 10 + 5}s linear infinite`;
+            particlesDiv.appendChild(particle);
+        }
+        @keyframes particleAnimation {
+            0% { transform: translate(0, 0); opacity: 1; }
+            100% { transform: translate(calc(100vw - 50%), calc(100vh - 50%)); opacity: 0; }
+        }
+
+        function getUID() {
+            let user = JSON.parse(localStorage.getItem('user'));
+            if (!user) { user = { uid: 'uid-' + Math.random().toString(36).substr(2, 9), coins: 10 }; localStorage.setItem('user', JSON.stringify(user)); }
+            return user;
+        }
+
+        function predict() {
+            const user = getUID();
+            const periodNumber = document.getElementById('periodNumber').value;
+            const loading = document.getElementById('loading');
+            if (user.coins <= 0) { alert("Insufficient coins."); return; }
+            if (periodNumber.length !== 5 || isNaN(periodNumber)) { alert("Enter a valid period number."); return; }
+            loading.style.display = 'block';
+            setTimeout(() => {
+                loading.style.display = 'none';
+                const lastDigit = parseInt(periodNumber[periodNumber.length - 1]);
+                const prediction = lastDigit % 2 === 0 ? 'BIG' : 'SMALL';
+                user.coins -= 1;
+                localStorage.setItem('user', JSON.stringify(user));
+                document.getElementById('gameResult').innerHTML = `Result: Red ${lastDigit} ${prediction}`;
+                document.getElementById('gameDetails').textContent = `Period: ${periodNumber}`;
+                document.getElementById('resultModal').style.display = "flex";
+                displayWalletInfo();
+            }, 2000);
+        }
+
+        function displayWalletInfo() {
+            const user = getUID();
+            document.getElementById('walletInfo').innerHTML = `Coins: ${user.coins}`;
+        }
+
+        function closeModal() { document.getElementById('resultModal').style.display = "none"; }
+
+        function copyToClipboard() {
+            const gameResult = document.getElementById('gameResult').innerText;
+            const gameDetails = document.getElementById('gameDetails').innerText;
+            const tempInput = document.createElement('input');
+            document.body.appendChild(tempInput);
+            tempInput.value = `${gameResult}\n${gameDetails}`;
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            alert("Result copied to clipboard!");
+        }
+
+        window.onload = function() { displayWalletInfo(); }
+    </script>
+</body>
+</html>
