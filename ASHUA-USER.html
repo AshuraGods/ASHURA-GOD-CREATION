@@ -29,7 +29,7 @@
     <div class="particles"></div>
     <div class="container">
         <h1>ASHURA PRO</h1>
-        <div class="wallet-info" id="walletInfo">Coins: 0</div>
+        <div class="wallet-info" id="walletInfo">UID: -- | Coins: 0</div>
         <input type="text" id="periodNumber" placeholder="Enter 5-digit period number" maxlength="5">
         <button onclick="predict()">Predict</button>
         <div id="loading" style="display: none; color: red; margin-top: 1em;">Getting...</div>
@@ -94,7 +94,7 @@
 
         function displayWalletInfo() {
             const user = getUID();
-            document.getElementById('walletInfo').innerHTML = `Coins: ${user.coins}`;
+            document.getElementById('walletInfo').innerHTML = `UID: ${user.uid} | Coins: ${user.coins}`;
         }
 
         function closeModal() { document.getElementById('resultModal').style.display = "none"; }
