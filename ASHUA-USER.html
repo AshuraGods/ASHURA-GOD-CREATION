@@ -61,17 +61,24 @@
             particle.style.animation = `particleAnimation ${Math.random() * 10 + 5}s linear infinite`;
             particlesDiv.appendChild(particle);
         }
+
         @keyframes particleAnimation {
             0% { transform: translate(0, 0); opacity: 1; }
             100% { transform: translate(calc(100vw - 50%), calc(100vh - 50%)); opacity: 0; }
         }
 
+        // Function to retrieve or create a unique ID for the device
         function getUID() {
             let user = JSON.parse(localStorage.getItem('user'));
-            if (!user) { user = { uid: 'uid-' + Math.random().toString(36).substr(2, 9), coins: 10 }; localStorage.setItem('user', JSON.stringify(user)); }
+            if (!user) {
+                // Generate a unique ID for the device (could be based on sessionStorage or a random value)
+                user = { uid: 'device-' + new Date().getTime(), coins: 10 };
+                localStorage.setItem('user', JSON.stringify(user));
+            }
             return user;
         }
 
+        // Predict function to handle logic and display result
         function predict() {
             const user = getUID();
             const periodNumber = document.getElementById('periodNumber').value;
@@ -92,13 +99,16 @@
             }, 2000);
         }
 
+        // Display the wallet information
         function displayWalletInfo() {
             const user = getUID();
             document.getElementById('walletInfo').innerHTML = `UID: ${user.uid} | Coins: ${user.coins}`;
         }
 
+        // Close the modal
         function closeModal() { document.getElementById('resultModal').style.display = "none"; }
 
+        // Copy the result to clipboard
         function copyToClipboard() {
             const gameResult = document.getElementById('gameResult').innerText;
             const gameDetails = document.getElementById('gameDetails').innerText;
@@ -111,7 +121,10 @@
             alert("Result copied to clipboard!");
         }
 
-        window.onload = function() { displayWalletInfo(); }
+        // Initialize wallet info when the page loads
+        window.onload = function() { 
+            displayWalletInfo(); 
+        }
     </script>
 </body>
 </html>
