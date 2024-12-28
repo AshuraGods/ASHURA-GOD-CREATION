@@ -5,55 +5,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - ASHURA PRO</title>
     <style>
-        /* Similar styling as the user-facing page, plus some admin-specific styles */
-        body {
-            font-family: Arial, sans-serif;
-            background: black;
-            color: red;
-        }
-        input, button {
-            padding: 0.5em;
-            margin: 0.5em;
-            font-size: 1em;
-            background: black;
-            color: red;
-            border: 1px solid red;
-        }
+        body { font-family: Arial, sans-serif; background-color: #111; color: #fff; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        h1 { text-align: center; }
+        label { font-size: 1.2em; }
+        input, button { padding: 10px; width: 100%; margin: 10px 0; border: 1px solid #ff0000; }
+        button { background-color: red; color: black; cursor: pointer; font-size: 1.2em; }
+        button:hover { background-color: #ff4d4d; }
+        .user-info { margin-top: 20px; }
     </style>
 </head>
 <body>
-    <h1>Admin Panel</h1>
-    <label for="uid">Enter User UID:</label>
-    <input type="text" id="uid" placeholder="User UID">
-    <label for="coins">Enter Coins to Add:</label>
-    <input type="number" id="coins" placeholder="Coins to Add">
-    <button onclick="addCoins()">Add Coins</button>
+    <div class="container">
+        <h1>Admin Panel</h1>
+        <label for="uid">Enter User UID:</label>
+        <input type="text" id="uid" placeholder="Device UID or User UID">
+        
+        <button onclick="getUser()">Get User Info</button>
 
-    <div id="status"></div>
+        <div class="user-info" id="userInfo"></div>
+
+        <label for="coins">Enter Coins to Add/Update:</label>
+        <input type="number" id="coins" placeholder="Coins">
+        <button onclick="updateCoins()">Update Coins</button>
+
+        <button onclick="deleteUser()">Delete User</button>
+    </div>
 
     <script>
-        function addCoins() {
-            const uid = document.getElementById('uid').value;
-            const coinsToAdd = parseInt(document.getElementById('coins').value);
-            const status = document.getElementById('status');
+        const apiBaseUrl = 'http://localhost:5000'; // URL of your backend server
 
-            if (!uid || isNaN(coinsToAdd) || coinsToAdd <= 0) {
-                status.innerHTML = "Please provide a valid UID and coin amount.";
+        // Function to fetch user data by UID
+        async function getUser() {
+            const uid = document.getElementById('uid').value;
+            const userInfoDiv = document.getElementById('userInfo');
+            userInfoDiv.innerHTML = ''; // Clear previous results
+
+            if (uid.trim() === '') {
+                alert('Please enter a UID');
                 return;
             }
 
-            // Fetch user data from localStorage
-            let users = JSON.parse(localStorage.getItem('users')) || [];
-            let user = users.find(u => u.uid === uid);
+            try {
+                const response = await fetch(`${apiBaseUrl}/user/${uid}`);
+                if (response.ok) {
+                    const user = await response.json();
+                    userInfoDiv.innerHTML = `
+                        <p><strong>UID:</strong> ${user.uid}</p>
+                        <p><strong>Coins:</strong> ${user.coins}</p>
+                    `;
+                } else {
+                    userInfoDiv.innerHTML = '<p>User not found!</p>';
+                }
+            } catch (err) {
+                console.error('Error fetching user:', err);
+                alert('Error fetching user data');
+            }
+        }
 
-            if (user) {
-                user.coins += coinsToAdd;
-                localStorage.setItem('users', JSON.stringify(users));
-                status.innerHTML = `Successfully added ${coinsToAdd} coins to UID: ${uid}`;
-            } else {
-                status.innerHTML = "User not found.";
+        // Function to update coins for the user
+        async function updateCoins() {
+            const uid = document.getElementById('uid').value;
+            const coins = document.getElementById('coins').value;
+
+            if (uid.trim() === '' || coins.trim() === '') {
+                alert('Please enter both UID and coins');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/updateCoins`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ uid, coins: parseInt(coins) })
+                });
+                const result = await response.json();
+                alert(result.message);
+                getUser(); // Refresh user info after updating
+            } catch (err) {
+                console.error('Error updating coins:', err);
+                alert('Error updating coins');
+            }
+        }
+
+        // Function to delete a user by UID
+        async function deleteUser() {
+            const uid = document.getElementById('uid').value;
+
+            if (uid.trim() === '') {
+                alert('Please enter UID to delete');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/deleteUser/${uid}`, { method: 'DELETE' });
+                if (response.ok) {
+                    alert('User deleted successfully');
+                    document.getElementById('userInfo').innerHTML = '';
+                } else {
+                    alert('User not found!');
+                }
+            } catch (err) {
+                console.error('Error deleting user:', err);
+                alert('Error deleting user');
             }
         }
     </script>
 </body>
-  </html>
+</html>
