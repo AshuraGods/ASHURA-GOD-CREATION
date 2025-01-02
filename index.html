@@ -1,46 +1,134 @@
-<script>
-    function startBot() {
-        // Get user input
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
-        const hashtag = document.getElementById("hashtag").value;
-        const status = document.getElementById("status");
-
-        // Check if all fields are filled
-        if (username === "" || password === "" || hashtag === "") {
-            status.innerHTML = "Please fill all fields.";
-            status.style.color = "red";
-            return;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Automation Bot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f1f1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
 
-        // Show status as bot is running
-        status.innerHTML = "Bot is running... Targeting posts with the hashtag #" + hashtag;
-        status.style.color = "green";
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
 
-        // Prepare data to send to the backend
-        const data = {
-            username: username,
-            password: password,
-            hashtag: hashtag
-        };
+        h1 {
+            text-align: center;
+            color: #333;
+        }
 
-        // Send a POST request to the Flask backend
-        fetch('http://127.0.0.1:5000/start-bot', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(responseData => {
-            // Display success or error message
-            status.innerHTML = responseData.message;
-            status.style.color = responseData.status === "success" ? "green" : "red";
-        })
-        .catch(error => {
-            status.innerHTML = "An error occurred: " + error;
-            status.style.color = "red";
-        });
-    }
-            </script>
+        label {
+            font-size: 14px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .status {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Instagram Automation Bot</h1>
+        <label for="username">Instagram Username</label>
+        <input type="text" id="username" placeholder="Enter your Instagram username">
+
+        <label for="password">Instagram Password</label>
+        <input type="password" id="password" placeholder="Enter your Instagram password">
+
+        <label for="hashtag">Hashtag to Target</label>
+        <input type="text" id="hashtag" placeholder="e.g. #python">
+
+        <button onclick="startBot()">Start Bot</button>
+
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        function startBot() {
+            // Get user input
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const hashtag = document.getElementById("hashtag").value;
+            const status = document.getElementById("status");
+
+            // Check if all fields are filled
+            if (username === "" || password === "" || hashtag === "") {
+                status.innerHTML = "Please fill all fields.";
+                status.style.color = "red";
+                return;
+            }
+
+            // Show status as bot is running
+            status.innerHTML = "Bot is running... Targeting posts with the hashtag #" + hashtag;
+            status.style.color = "green";
+
+            // Prepare data to send to the backend
+            const data = {
+                username: username,
+                password: password,
+                hashtag: hashtag
+            };
+
+            // Send a POST request to the Flask backend
+            fetch('http://127.0.0.1:5000/start-bot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(responseData => {
+                // Display success or error message
+                status.innerHTML = responseData.message;
+                status.style.color = responseData.status === "success" ? "green" : "red";
+            })
+            .catch(error => {
+                status.innerHTML = "An error occurred: " + error;
+                status.style.color = "red";
+            });
+        }
+    </script>
+
+</body>
+</html>
