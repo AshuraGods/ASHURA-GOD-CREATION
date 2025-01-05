@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASHURA RECHARGE SYSTEM</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black; /* Black background for the entire page */
+            color: red; /* Red text color */
+            padding: 20px;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .container {
+            max-width: 500px; /* Adjusted container width */
+            margin: 0 auto;
+            padding: 20px;
+            background-color: black; /* Black background for the form container */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(255, 0, 0, 0.2); /* Red shadow effect */
+            color: white; /* White text color for form inputs */
+        }
+        h2 {
+            text-align: center;
+            color: red; /* Red title text color */
+            text-shadow: 2px 2px 4px rgba(255, 0, 0, 0.5); /* Red shadow on heading */
+        }
+        label {
+            display: block;
+            margin: 8px 0 5px;
+            font-weight: bold;
+            color: white; /* White label text */
+            text-shadow: 1px 1px 2px rgba(255, 0, 0, 0.3); /* Red shadow on label text */
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 8px; /* Smaller input box */
+            margin: 5px 0 15px 0; /* Adjusted margins */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: linear-gradient(45deg, #ff0000, #ff6600, #ff0000);
+            background-size: 200% 200%;
+            color: red; /* Initial text color is red */
+            font-size: 14px; /* Smaller font size */
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(255, 0, 0, 0.1); /* Light red shadow on input fields */
+        }
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            background-position: 100% 100%;
+            box-shadow: 0 4px 8px rgba(255, 0, 0, 0.3);
+        }
+
+        /* Change text color to white when user types */
+        input[type="text"]:focus, input[type="number"]:focus,
+        input[type="text"]:valid, input[type="number"]:valid,
+        select:focus {
+            color: white; /* Text color becomes white when focused or valid */
+        }
+
+        /* White placeholder text */
+        input[type="text"]::placeholder, input[type="number"]::placeholder {
+            color: white; /* White placeholder text */
+            opacity: 1; /* Ensure the placeholder text is fully visible */
+        }
+
+        select {
+            color: white; /* White text color in select box */
+        }
+
+        /* White placeholder text for the select input box */
+        select option {
+            color: black; /* Option text color in select should be black */
+        }
+
+        button {
+            width: 100%;
+            padding: 10px; /* Smaller button padding */
+            background-color: red; /* Red background for button */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(255, 0, 0, 0.2); /* Red shadow on button */
+            margin: 5px 0; /* Margin between buttons */
+        }
+        button:hover {
+            background-color: darkred; /* Dark red on button hover */
+        }
+
+        /* Loading animation */
+        .loading {
+            display: none;
+            color: white;
+            font-size: 24px;
+            margin-top: 20px;
+            text-align: center;
+            animation: loadingAnimation 1s infinite;
+        }
+        @keyframes loadingAnimation {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        /* Floating success message */
+        .success-message {
+            display: none;
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: black;
+            color: red;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(255, 0, 0, 0.3); /* Red shadow for success message */
+            text-align: center;
+            font-size: 18px;
+            animation: floatingMessage 3s forwards;
+            z-index: 999;
+        }
+
+        @keyframes floatingMessage {
+            0% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, 20px); }
+            100% { transform: translate(-50%, 0); }
+        }
+
+        .success-message.glowing {
+            animation: glowing 1.5s infinite alternate;
+        }
+
+        @keyframes glowing {
+            0% { text-shadow: 0 0 10px red, 0 0 20px red, 0 0 30px red; }
+            100% { text-shadow: 0 0 20px red, 0 0 30px red, 0 0 40px red; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>ASHURA RECHARGE SYSTEM</h2>
+    <form id="fakeRechargeForm">
+        <!-- Platform Selection -->
+        <label for="platform">Select Platform</label>
+        <select id="platform" name="platform" required>
+            <option value="">--Select Platform--</option>
+            <option value="91club">91club</option>
+            <option value="Bdg Win">Bdg Win</option>
+            <option value="Big Mumbai">Big Mumbai</option>
+            <option value="Goa games">Goa games</option>
+            <option value="51game">51game</option>
+            <option value="big daddy">big daddy</option>
+            <option value="Lottery 7">Lottery 7</option>
+            <option value="55club">55club</option>
+            <option value="Dm Win">Dm Win</option>
+            <option value="Diu Win">Diu Win</option>
+            <option value="Daman">Daman</option>
+            <option value="Tc Lottery">Tc Lottery</option>
+            <option value="82 Lottery">82 Lottery</option>
+        </select>
+
+        <label for="uid">Enter UID (6-8 digits)</label>
+        <input type="text" id="uid" name="uid" pattern="^\d{6,8}$" required title="UID must be between 6 and 8 digits" placeholder="Enter 6-8 digit UID">
+
+        <label for="phoneNumber">Enter 10-digit Number</label>
+        <input type="text" id="phoneNumber" name="phoneNumber" pattern="^\d{10}$" required title="Phone number must be exactly 10 digits" placeholder="Enter 10-digit number">
+
+        <label for="amount">Amount</label>
+        <input type="number" id="amount" name="amount" required>
+
+        <button type="submit">Recharge Now</button>
+
+        <!-- New Telegram and Register buttons -->
+        <button type="button" onclick="window.location.href='https://t.me/GodXAshuraOfficial'">TELEGRAM</button>
+        <button type="button" onclick="window.location.href='https://51game7.in/#/register?invitationCode=538543796865'">REGISTER ®</button>
+    </form>
+
+    <!-- Loading Animation -->
+    <div class="loading" id="loadingMessage">Recharging...</div>
+
+    <!-- Success Message -->
+    <div class="success-message" id="successMessage">
+        <h3>RECHARGE DONE ✅</h3>
+        <p>=================</p>
+        <p>GAME: <span id="selectedGame"></span></p>
+        <p>AMOUNT: ₹<span id="rechargeAmount"></span></p>
+        <p>=================</p>
+        <p>THANKS FOR RECHARGE ❤</p>
+    </div>
+</div>
+
+<script>
+    // Handle the form submission
+    document.getElementById('fakeRechargeForm').addEventListener('submit', function(e) {
+        e.preventDefault();  // Prevent the form from submitting
+
+        // Show loading message
+        document.getElementById('loadingMessage').style.display = 'block';
+
+        // Simulate a delay for recharging process (e.g., 3 seconds)
+        setTimeout(function() {
+            // Hide loading message
+            document.getElementById('loadingMessage').style.display = 'none';
+
+            // Get selected platform and entered values
+            var platform = document.getElementById('platform').value;
+            var amount = document.getElementById('amount').value;
+
+            // Populate the success message with the selected platform and amount
+            document.getElementById('selectedGame').innerText = platform;
+            document.getElementById('rechargeAmount').innerText = amount;
+
+            // Display the success message
+            var successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
+            successMessage.classList.add('glowing');
+
+            // Optionally, hide the success message after a few seconds
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 5000);  // Hide after 5 seconds
+
+            // Reset the form after the success message
+            document.getElementById('fakeRechargeForm').reset();
+        }, 3000); // Simulated delay for the recharge process
+    });
+</script>
+
+</body>
+</html>
